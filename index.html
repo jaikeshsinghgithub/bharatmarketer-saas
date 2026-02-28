@@ -279,6 +279,64 @@
         </div>
     </footer>
 
+    <!-- Auth Modals -->
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal">
+            <button class="modal-close" data-close="loginModal"><i class="fa-solid fa-xmark"></i></button>
+            <h2>Welcome Back</h2>
+            <p>Log in to access your dashboard</p>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" class="form-control" required placeholder="name@company.com">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" class="form-control" required placeholder="••••••••">
+                </div>
+                <div class="error-message" id="loginError"></div>
+                <button type="submit" class="btn primary-btn w-100" style="margin-top: 10px;">Log In</button>
+            </form>
+
+            <div class="auth-switch">
+                Don't have an account? <a href="#" id="openSignupFromLogin">Sign Up</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal-overlay" id="signupModal">
+        <div class="modal">
+            <button class="modal-close" data-close="signupModal"><i class="fa-solid fa-xmark"></i></button>
+            <h2>Create an Account</h2>
+            <p>Start your 14-day free trial</p>
+
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" class="form-control" required placeholder="Virat Kohli">
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email Address</label>
+                    <input type="email" id="signupEmail" class="form-control" required placeholder="name@company.com">
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" class="form-control" required placeholder="••••••••">
+                </div>
+                <div class="error-message" id="signupError"></div>
+                <button type="submit" class="btn primary-btn w-100" style="margin-top: 10px;">Create Account</button>
+            </form>
+
+            <div class="auth-switch">
+                Already have an account? <a href="#" id="openLoginFromSignup">Log In</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/api.js"></script>
     <script src="assets/js/main.js"></script>
 </body>
 

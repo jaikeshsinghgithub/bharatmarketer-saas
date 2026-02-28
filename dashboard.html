@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | BharatMarketer SaaS</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Dashboard specific styles */
+        body {
+            background-color: var(--bg-dark);
+        }
+
+        .dashboard-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--bg-darker);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-header .icon {
+            color: var(--primary);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1.5rem 0;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            padding: 0.8rem 1.5rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            color: var(--primary);
+            border-left-color: var(--primary);
+            background: rgba(255, 122, 0, 0.05);
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .user-details h4 {
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+        .user-details p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .logout-btn {
+            color: #ff5f56;
+            font-size: 0.85rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .topbar {
+            height: 70px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 2rem;
+        }
+
+        .credits-badge {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: #c4b5fd;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Dashboard Cards */
+        .dash-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .dash-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* AI Writer specific */
+        .ai-writer-form textarea {
+            width: 100%;
+            height: 100px;
+            background: rgba(2, 6, 23, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-main);
+            padding: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+
+        .ai-writer-form textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .result-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 8px;
+            min-height: 150px;
+            position: relative;
+            display: none;
+            margin-top: 1.5rem;
+            white-space: pre-wrap;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        /* Bulk WA specific */
+        .contact-list {
+            margin-bottom: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .contact-item {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .contact-item:last-child {
+            border-bottom: none;
+        }
+
+        .contact-item input[type="checkbox"] {
+            accent-color: var(--primary);
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="icon"><i class="fa-solid fa-bolt"></i></span>
+                <span class="text">BharatMarketer</span>
+            </div>
+            <div class="sidebar-nav">
+                <div class="nav-item" data-target="campaigns-panel">
+                    <i class="fa-solid fa-layer-group"></i> Campaigns
+                </div>
+                <div class="nav-item active" data-target="ai-writer-panel">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> AI Writer
+                </div>
+                <div class="nav-item" data-target="whatsapp-panel">
+                    <i class="fa-brands fa-whatsapp"></i> Bulk WhatsApp
+                </div>
+                <div class="nav-item" data-target="settings-panel">
+                    <i class="fa-solid fa-gear"></i> Settings
+                </div>
+            </div>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userInitial">U</div>
+                    <div class="user-details">
+                        <h4 id="userName">User Name</h4>
+                        <p id="userEmail">user@email.com</p>
+                    </div>
+                </div>
+                <button class="logout-btn" id="logoutBtn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log
+                    Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="topbar">
+                <div class="credits-badge">
+                    <i class="fa-solid fa-gem"></i> <span id="creditCount">Starter Plan</span>
+                    <a href="#"
+                        style="color:var(--text-main); font-size: 0.75rem; margin-left: 10px; text-decoration: underline;">Upgrade</a>
+                </div>
+            </header>
+
+            <div class="content-area">
+
+                <!-- Campaigns Panel -->
+                <div id="campaigns-panel" class="panel">
+                    <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
+                        <h2 style="font-size: 2rem;">Your Campaigns</h2>
+                        <p>Track performance across WhatsApp and Email.</p>
+                    </div>
+                    <div class="dash-card">
+                        <p style="color: var(--text-muted); text-align: center; padding: 2rem;">No campaigns yet. Create
+                            your first campaign to get started.</p>
+                        <div style="text-align: center;">
+                            <button class="btn primary-btn"
+                                onclick="document.querySelector('[data-target=\'ai-writer-panel\']').click()">Create
+                                Campaign</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Writer Panel -->
+                <div id="ai-writer-panel" class="panel active">
+                    <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
+                        <h2 style="font-size: 2rem;">AI Content Writer</h2>
+                        <p>Generate highly converting WhatsApp messages in English & Hindi.</p>
+                    </div>
+
+                    <div class="dash-card">
+                        <h3><i class="fa-solid fa-pen-nib" style="color: var(--primary);"></i> What do you want to
+                            promote?</h3>
+                        <form id="aiWriterForm" class="ai-writer-form">
+                            <textarea id="aiPrompt"
+                                placeholder="e.g. Diwali sale 20% off on all electronics, limited time offer valid till Sunday. Visit store today!"
+                                required></textarea>
+                            <button type="submit" class="btn primary-btn" id="generateBtn"><i
+                                    class="fa-solid fa-wand-magic-sparkles"></i> Generate Copy</button>
+                        </form>
+
+                        <div class="result-box" id="aiResultBox">
+                            <button class="copy-btn" id="copyResultBtn">Copy</button>
+                            <div id="aiGeneratedContent">Your generated content will appear here...</div>
+
+                            <div
+                                style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem; text-align: right;">
+                                <button class="btn outline-btn" id="sendToWhatsAppBtn">Send via WhatsApp</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bulk WhatsApp Panel -->
+                <div id="whatsapp-panel" class="panel">
+                    <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
+                        <h2 style="font-size: 2rem;">Send Bulk WhatsApp</h2>
+                        <p>Broadcast your message to your customer list.</p>
+                    </div>
+
+                    <div class="dash-card">
+                        <h3><i class="fa-regular fa-message" style="color: #25D366;"></i> Message Content</h3>
+                        <div class="ai-writer-form">
+                            <textarea id="waMessageContent"
+                                placeholder="Enter your message here or generate one using the AI Writer..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="dash-card">
+                        <h3><i class="fa-solid fa-address-book" style="color: var(--primary);"></i> Select Contacts</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Select customers
+                            from your imported list (Format: 91XXXXXXXXXX).</p>
+
+                        <div class="contact-list">
+                            <!-- Dummy Contacts for testing -->
+                            <label class="contact-item">
+                                <div>
+                                    <strong>Rahul Sharma</strong><br>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">919876543210</span>
+                                </div>
+                                <input type="checkbox" name="contacts" value="919876543210" checked>
+                            </label>
+                            <label class="contact-item">
+                                <div>
+                                    <strong>Priya Singh</strong><br>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">918765432109</span>
+                                </div>
+                                <input type="checkbox" name="contacts" value="918765432109" checked>
+                            </label>
+                            <label class="contact-item">
+                                <div>
+                                    <strong>Amit Patel</strong><br>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">917654321098</span>
+                                </div>
+                                <input type="checkbox" name="contacts" value="917654321098">
+                            </label>
+                        </div>
+
+                        <div id="waStatus"
+                            style="display: none; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.9rem;">
+                        </div>
+
+                        <button class="btn primary-btn w-100" id="sendBulkBtn"
+                            style="background: #25D366; color: white;"><i class="fa-brands fa-whatsapp"></i> Send to
+                            Selected Contacts</button>
+                    </div>
+                </div>
+
+                <!-- Settings Panel -->
+                <div id="settings-panel" class="panel">
+                    <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
+                        <h2 style="font-size: 2rem;">Account Settings</h2>
+                    </div>
+                    <div class="dash-card">
+                        <p>API Configurations and Subscription details will be displayed here.</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/dashboard.js"></script>
+</body>
+
+</html>

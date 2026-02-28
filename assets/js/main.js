@@ -57,4 +57,134 @@ document.addEventListener('DOMContentLoaded', () => {
             navbar.style.boxShadow = 'none';
         }
     });
+
+    // Auth Modals Logic
+    const loginBtn = document.querySelector('.login-btn');
+    const ctaBtns = document.querySelectorAll('.cta-btn, .primary-btn[href="#pricing"], .outline-btn');
+    const loginModal = document.getElementById('loginModal');
+    const signupModal = document.getElementById('signupModal');
+    const closeBtns = document.querySelectorAll('.modal-close');
+    const openSignupFromLogin = document.getElementById('openSignupFromLogin');
+    const openLoginFromSignup = document.getElementById('openLoginFromSignup');
+
+    // Forms
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const loginError = document.getElementById('loginError');
+    const signupError = document.getElementById('signupError');
+
+    // Open Login Modal
+    if (loginBtn) {
+        loginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (ApiClient.isAuthenticated()) {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+            loginModal.classList.add('active');
+        });
+    }
+
+    // Open Signup Modal (from pricing buttons)
+    ctaBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if (btn.tagName === 'BUTTON' || btn.getAttribute('href') !== '#pricing' && btn.getAttribute('href') !== '#demo') {
+                e.preventDefault();
+                if (ApiClient.isAuthenticated()) {
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+                signupModal.classList.add('active');
+            }
+        });
+    });
+
+    // Close Modals
+    closeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById(btn.getAttribute('data-close')).classList.remove('active');
+        });
+    });
+
+    // Switch between modals
+    if (openSignupFromLogin) {
+        openSignupFromLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginModal.classList.remove('active');
+            signupModal.classList.add('active');
+        });
+    }
+
+    if (openLoginFromSignup) {
+        openLoginFromSignup.addEventListener('click', (e) => {
+            e.preventDefault();
+            signupModal.classList.remove('active');
+            loginModal.classList.add('active');
+        });
+    }
+
+    // Login Submission
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerText;
+
+            try {
+                loginError.style.display = 'none';
+                submitBtn.innerText = 'Logging in...';
+                submitBtn.disabled = true;
+
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+
+                await ApiClient.login(email, password);
+
+                // Redirect on success
+                window.location.href = 'dashboard.html';
+            } catch (err) {
+                loginError.innerText = err.message;
+                loginError.style.display = 'block';
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    }
+
+    // Signup Submission
+    if (signupForm) {
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = signupForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerText;
+
+            try {
+                signupError.style.display = 'none';
+                submitBtn.innerText = 'Creating account...';
+                submitBtn.disabled = true;
+
+                const fullName = document.getElementById('signupName').value;
+                const email = document.getElementById('signupEmail').value;
+                const password = document.getElementById('signupPassword').value;
+
+                // Register user
+                await ApiClient.register({
+                    email: email,
+                    password: password,
+                    full_name: fullName
+                });
+
+                // Then auto-login
+                await ApiClient.login(email, password);
+
+                // Redirect on success
+                window.location.href = 'dashboard.html';
+            } catch (err) {
+                signupError.innerText = err.message;
+                signupError.style.display = 'block';
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    }
 });

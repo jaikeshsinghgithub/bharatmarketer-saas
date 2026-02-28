@@ -16,7 +16,7 @@ class User(Base):
     
     # Subscriptions
     subscription_tier = Column(String, default="free") # free, starter, growth, pro
-    subscription_status = Column(String, default="inactive") # inactive, active, past_due, canceled
+    subscription_status = Column(String, default="active") # inactive, active, past_due, canceled
     
     # Payment Gateway specific IDs (for mapping webhooks)
     stripe_customer_id = Column(String, unique=True, index=True, nullable=True)
