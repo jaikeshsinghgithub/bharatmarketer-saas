@@ -14,9 +14,9 @@ async def send_whatsapp_message(to_number: str, message_text: str):
     Sends a simple text message via WhatsApp Cloud API.
     """
     if not WHATSAPP_TOKEN or not WHATSAPP_PHONE_NUMBER_ID:
-        logger.warning("WhatsApp API not configured, logging message instead.")
-        logger.info(f"Mock WhatsApp -> {to_number}: {message_text}")
-        return {"status": "mocked", "message": "API keys missing, message logged."}
+        from fastapi import HTTPException
+        logger.error("WhatsApp API Keys missing.")
+        raise HTTPException(status_code=500, detail="WhatsApp API Keys missing. Please configure WHATSAPP_TOKEN and WHATSAPP_PHONE_NUMBER_ID in your environment variables.")
 
     url = f"https://graph.facebook.com/{WHATSAPP_API_VERSION}/{WHATSAPP_PHONE_NUMBER_ID}/messages"
     
@@ -33,8 +33,18 @@ async def send_whatsapp_message(to_number: str, message_text: str):
     }
     
     async with httpx.AsyncClient() as client:
-        response = await client.post(url, json=payload, headers=headers)
-        return response.json()
+        try:
+            response = await client.post(url, json=payload, headers=headers)
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            logger.error(f"WhatsApp API Error: {e.response.text}")
+            from fastapi import HTTPException
+            raise HTTPException(status_code=500, detail=f"Failed to send WhatsApp message. Meta API responded with error.")
+        except Exception as e:
+            logger.error(f"Unknown WhatsApp Error: {e}")
+            from fastapi import HTTPException
+            raise HTTPException(status_code=500, detail="Failed to connect to Meta API.")
 
 async def send_whatsapp_template(to_number: str, template_name: str, language_code: str = "en_US"):
     """

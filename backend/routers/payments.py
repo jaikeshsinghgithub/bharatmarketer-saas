@@ -19,9 +19,9 @@ router = APIRouter()
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 # Initialize Razorpay Client
-razorpay_client = None
-if settings.RAZORPAY_KEY_ID and settings.RAZORPAY_KEY_SECRET:
-    razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+if not settings.RAZORPAY_KEY_ID or not settings.RAZORPAY_KEY_SECRET:
+    raise ValueError("RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET must be set in the environment.")
+razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
 # Pricing Plans (Hardcoded for beta MVP)
 PLANS = {

@@ -82,7 +82,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 aiResultBox.style.display = 'block';
 
             } catch (err) {
-                alert('Error: ' + err.message);
+                aiGeneratedContent.innerHTML = `<span style="color: #ff5f56;"><i class="fa-solid fa-triangle-exclamation"></i> ${err.message}</span>`;
+                aiResultBox.style.display = 'block';
             } finally {
                 generateBtn.innerHTML = originalHtml;
                 generateBtn.disabled = false;
@@ -190,13 +191,35 @@ document.addEventListener('DOMContentLoaded', async () => {
                         throw new Error(data.detail || 'Failed to initialize payment');
                     }
 
-                    if (data.short_url) {
-                        window.location.href = data.short_url; // Redirect to Razorpay checkout page
+                    if (data.subscription_id) {
+                        // Launch Razorpay Checkout
+                        const options = {
+                            "key": "YOUR_RAZORPAY_KEY_ID", // Replace in production or fetch from backend env
+                            "subscription_id": data.subscription_id,
+                            "name": "BharatMarketer SaaS",
+                            "description": "Growth Plan Upgrade",
+                            "image": "https://dummyimage.com/150x150/000/fff&text=BM",
+                            "handler": function (response) {
+                                alert("Payment successful! Your account is now being upgraded. Subscription ID: " + response.razorpay_subscription_id);
+                                // The backend webhook will handle enabling the user's features
+                                setTimeout(() => window.location.reload(), 3000);
+                            },
+                            "theme": {
+                                "color": "#FF7A00"
+                            }
+                        };
+                        const rzp1 = new Razorpay(options);
+                        rzp1.on('payment.failed', function (response) {
+                            alert("Payment Failed. Reason: " + response.error.description);
+                        });
+                        rzp1.open();
+                    } else if (data.short_url) {
+                        window.location.href = data.short_url; // Redirect to Razorpay checkout page fallback
                     } else {
                         alert('Payment link not received.');
                     }
                 } catch (err) {
-                    alert('Integration Error: ' + err.message + '\nNote: Requires real Razorpay API keys in .env');
+                    alert('Integration Error: ' + err.message + '\\nNote: Requires real Razorpay API keys in .env');
                 } finally {
                     btn.innerText = originalText;
                 }

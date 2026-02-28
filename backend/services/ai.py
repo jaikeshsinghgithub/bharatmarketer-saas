@@ -9,8 +9,8 @@ async def generate_marketing_copy(prompt: str, language: str = "English", tone: 
     Calls OpenAI API to generate marketing copy in a specific language and tone.
     """
     if not OPENAI_API_KEY:
-        # Mock response for development
-        return f"[MOCK AI RESPONSE]\nGenerated a {tone} marketing copy in {language} about: {prompt}"
+        from fastapi import HTTPException
+        raise HTTPException(status_code=500, detail="OpenAI API Key is missing. Please configure it in your environment variables.")
 
     url = "https://api.openai.com/v1/chat/completions"
     headers = {
@@ -44,7 +44,8 @@ async def agentic_chat_response(customer_message: str, business_context: str) ->
     Generates a smart, autonomous reply based on the customer's message and the business's context (e.g., booking availability).
     """
     if not OPENAI_API_KEY:
-        return "[MOCK AI AGENT] This would be an intelligent contextual response."
+        from fastapi import HTTPException
+        raise HTTPException(status_code=500, detail="OpenAI API Key is missing. Please configure it in your environment variables.")
         
     url = "https://api.openai.com/v1/chat/completions"
     headers = {
