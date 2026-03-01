@@ -2,7 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from core.config import settings
 from database import Base, engine
-from routers import auth, payments, marketing, ai
+from routers import auth, payments, marketing, ai, contacts, referrals, webhooks
+from models.user import User
+from models.contact import Contact
 
 # Will create tables on startup (for simplicity in development)
 # In production, use Alembic migrations instead!
@@ -39,3 +41,6 @@ app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["aut
 app.include_router(payments.router, prefix=f"{settings.API_V1_STR}/payments", tags=["payments"])
 app.include_router(marketing.router, prefix=f"{settings.API_V1_STR}/marketing", tags=["marketing"])
 app.include_router(ai.router, prefix=f"{settings.API_V1_STR}/ai", tags=["ai"])
+app.include_router(contacts.router, prefix=f"{settings.API_V1_STR}/contacts", tags=["contacts"])
+app.include_router(referrals.router, prefix=f"{settings.API_V1_STR}/referrals", tags=["referrals"])
+app.include_router(webhooks.router, prefix=f"{settings.API_V1_STR}/webhooks", tags=["webhooks"])

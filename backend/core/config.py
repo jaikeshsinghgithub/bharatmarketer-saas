@@ -19,6 +19,14 @@ class Settings(BaseSettings):
     
     STRIPE_SECRET_KEY: str = os.getenv("STRIPE_SECRET_KEY", "")
     STRIPE_WEBHOOK_SECRET: str = os.getenv("STRIPE_WEBHOOK_SECRET", "")
+    
+    # WhatsApp
+    WHATSAPP_TOKEN: str = os.getenv("WHATSAPP_TOKEN", "")
+    WHATSAPP_PHONE_NUMBER_ID: str = os.getenv("WHATSAPP_PHONE_NUMBER_ID", "")
+    WHATSAPP_VERIFY_TOKEN: str = os.getenv("WHATSAPP_VERIFY_TOKEN", "bharatmarketer_verify_token_2026")
+    
+    # AI
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
 
     class Config:
         case_sensitive = True
